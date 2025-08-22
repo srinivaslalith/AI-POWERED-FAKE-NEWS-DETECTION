@@ -15,35 +15,42 @@ A modular FastAPI backend + React frontend prototype for detecting fake news usi
 
 ## Quick Start
 
-### 1. Backend Setup
+### Option 1: Automated Setup (Recommended)
 
 ```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Run the automated setup script
+./setup.sh
+```
 
-# Install dependencies
+This will automatically set up both backend and frontend with all dependencies.
+
+### Option 2: Manual Setup
+
+#### Backend (Terminal 1)
+```bash
 cd backend
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-# Run the API server
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-The API will be available at `http://localhost:8000` with automatic documentation at `http://localhost:8000/docs`.
-
-### 2. Frontend Setup
-
+#### Frontend (Terminal 2)
 ```bash
-# Install dependencies
 cd frontend
 npm install
-
-# Start development server
 npm start
 ```
 
-The frontend will be available at `http://localhost:3000`.
+### Option 3: Quick Demo
+```bash
+./start_demo.sh
+```
+
+### Access Points
+- **Frontend**: http://localhost:3000
+- **API**: http://localhost:8000  
+- **API Docs**: http://localhost:8000/docs
 
 ## Configuration
 
@@ -296,19 +303,62 @@ npx serve -s build -l 3000
 
 ## Troubleshooting
 
-### Model Loading Issues
+### Installation Issues
+
+#### Virtual Environment Creation Failed
+```bash
+# On Ubuntu/Debian:
+sudo apt install python3-venv
+
+# On other systems, ensure pip is installed:
+python3 -m ensurepip --upgrade
+```
+
+#### Dependencies Installation Failed
+```bash
+# Try minimal dependencies first:
+pip install -r requirements-minimal.txt
+
+# Then install ML dependencies separately:
+pip install transformers torch
+```
+
+#### Permission Errors
+```bash
+# Use --user flag if virtual environment isn't working:
+pip install --user -r requirements.txt
+```
+
+### Runtime Issues
+
+#### Model Loading Issues
 - Ensure you have sufficient memory (2GB+ recommended)
 - Check internet connection for model download
-- Try a smaller model if needed: `distilbert-base-uncased-finetuned-sst-2-english`
+- The system will use a mock engine if transformers isn't available
 
-### CORS Issues
+#### CORS Issues
 - Backend is configured to allow `localhost:3000`
 - For production, update CORS origins in `app/main.py`
 
-### Scraping Failures
+#### Scraping Failures
 - Some websites block automated scraping
-- Try different URLs or implement more sophisticated scraping
-- Check network connectivity
+- The system gracefully handles missing scraping dependencies
+- Check network connectivity for URL analysis
+
+### Quick Fixes
+
+#### Reset Everything
+```bash
+# Clean up and restart
+rm -rf backend/venv frontend/node_modules
+./setup.sh
+```
+
+#### Test Without Dependencies
+```bash
+# Run basic validation (no ML dependencies required)
+python3 test_basic.py
+```
 
 ## Contributing
 

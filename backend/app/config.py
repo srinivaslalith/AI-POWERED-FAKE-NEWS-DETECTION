@@ -15,8 +15,14 @@ class Config:
     
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from YAML file and environment variables."""
-        # Load from YAML file
+        # Load from YAML file - check both relative and absolute paths
         config_file = Path(self.config_path)
+        if not config_file.is_absolute():
+            # Try relative to current directory first
+            if not config_file.exists():
+                # Try relative to this file's directory
+                config_file = Path(__file__).parent.parent / self.config_path
+        
         if config_file.exists():
             with open(config_file, 'r') as f:
                 config = yaml.safe_load(f)

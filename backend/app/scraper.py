@@ -1,7 +1,15 @@
 """Web scraper module for extracting article content from URLs."""
 
-import requests
-from bs4 import BeautifulSoup
+try:
+    import requests
+    from bs4 import BeautifulSoup
+    SCRAPING_AVAILABLE = True
+except ImportError:
+    SCRAPING_AVAILABLE = False
+    # Create dummy class for type hints
+    class BeautifulSoup:
+        pass
+    
 from urllib.parse import urlparse
 from typing import Dict, Optional
 import re
@@ -12,10 +20,13 @@ class ArticleScraper:
     
     def __init__(self, timeout: int = 10):
         self.timeout = timeout
-        self.session = requests.Session()
-        self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        })
+        if SCRAPING_AVAILABLE:
+            self.session = requests.Session()
+            self.session.headers.update({
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            })
+        else:
+            self.session = None
     
     def extract_article(self, url: str) -> Dict[str, Optional[str]]:
         """
@@ -28,6 +39,14 @@ class ArticleScraper:
             Dict containing 'text', 'title', 'domain', and 'error' keys
         """
         try:
+            if not SCRAPING_AVAILABLE:
+                return {
+                    'text': None,
+                    'title': None,
+                    'domain': None,
+                    'error': 'Scraping dependencies not available (install requests and beautifulsoup4)'
+                }
+            
             # Validate URL
             parsed_url = urlparse(url)
             if not parsed_url.scheme or not parsed_url.netloc:
@@ -47,6 +66,8 @@ class ArticleScraper:
             response.raise_for_status()
             
             # Parse HTML
+            if not SCRAPING_AVAILABLE:
+                raise ImportError("BeautifulSoup not available")
             soup = BeautifulSoup(response.content, 'html.parser')
             
             # Extract title
@@ -85,7 +106,7 @@ class ArticleScraper:
                 'error': f'Scraping error: {str(e)}'
             }
     
-    def _extract_title(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_title(self, soup) -> Optional[str]:
         """Extract article title from HTML."""
         # Try various title selectors
         title_selectors = [
@@ -107,7 +128,7 @@ class ArticleScraper:
         
         return None
     
-    def _extract_main_content(self, soup: BeautifulSoup) -> Optional[str]:
+    def _extract_main_content(self, soup) -> Optional[str]:
         """Extract main article content from HTML."""
         # Remove unwanted elements
         for element in soup(['script', 'style', 'nav', 'header', 'footer', 'aside', 'iframe']):

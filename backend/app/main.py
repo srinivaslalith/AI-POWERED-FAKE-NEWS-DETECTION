@@ -13,7 +13,11 @@ from .models import (
     ErrorResponse, HealthResponse
 )
 from .config import config
-from .nlp_engine import FakeNewsDetector
+try:
+    from .nlp_engine import FakeNewsDetector
+except ImportError as e:
+    logger.warning(f"Could not import full NLP engine ({e}), using mock version")
+    from .nlp_engine_mock import FakeNewsDetector
 from .factcheck_adapter import FactCheckAdapter
 from .scoring import CredibilityScorer
 from .scraper import ArticleScraper

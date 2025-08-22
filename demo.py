@@ -6,13 +6,19 @@ Run this to verify the backend modules work correctly.
 
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
 
-from backend.app.config import config
-from backend.app.nlp_engine import FakeNewsDetector
-from backend.app.factcheck_adapter import FactCheckAdapter
-from backend.app.scoring import CredibilityScorer
-from backend.app.scraper import ArticleScraper
+# Add backend to path
+backend_path = os.path.join(os.path.dirname(__file__), 'backend')
+sys.path.insert(0, backend_path)
+
+# Change working directory to backend for relative file access
+os.chdir(backend_path)
+
+from app.config import config
+from app.nlp_engine import FakeNewsDetector
+from app.factcheck_adapter import FactCheckAdapter
+from app.scoring import CredibilityScorer
+from app.scraper import ArticleScraper
 
 def test_components():
     """Test all components individually."""

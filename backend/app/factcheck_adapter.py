@@ -1,7 +1,12 @@
 """Fact-check adapter for integrating with external fact-checking APIs."""
 
-import requests
-from typing import List, Dict, Optional
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+    
+from typing import List, Dict, Optional, Any
 import logging
 from urllib.parse import quote
 
@@ -14,9 +19,9 @@ class FactCheckAdapter:
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key
         self.base_url = "https://factchecktools.googleapis.com/v1alpha1/claims:search"
-        self.enabled = api_key is not None
+        self.enabled = api_key is not None and REQUESTS_AVAILABLE
     
-    def check_claims(self, text: str, max_claims: int = 5) -> List[Dict[str, any]]:
+    def check_claims(self, text: str, max_claims: int = 5) -> List[Dict[str, Any]]:
         """
         Check claims in the text against fact-checking databases.
         
@@ -71,9 +76,12 @@ class FactCheckAdapter:
         
         return claims[:5]  # Limit to 5 claims
     
-    def _query_google_factcheck(self, query: str) -> Optional[List[Dict[str, any]]]:
+    def _query_google_factcheck(self, query: str) -> Optional[List[Dict[str, Any]]]:
         """Query Google Fact Check Tools API."""
         try:
+            if not REQUESTS_AVAILABLE:
+                return None
+                
             params = {
                 'key': self.api_key,
                 'query': query,
@@ -105,7 +113,7 @@ class FactCheckAdapter:
             logger.error(f"Google Fact Check API error: {e}")
             return None
     
-    def _mock_fact_check_response(self) -> List[Dict[str, any]]:
+    def _mock_fact_check_response(self) -> List[Dict[str, Any]]:
         """
         Return mock fact-check response when API is not available.
         
@@ -122,7 +130,7 @@ class FactCheckAdapter:
             }
         ]
     
-    def get_status(self) -> Dict[str, any]:
+    def get_status(self) -> Dict[str, Any]:
         """Get fact-check adapter status."""
         return {
             'enabled': self.enabled,

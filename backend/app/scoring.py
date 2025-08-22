@@ -1,7 +1,7 @@
 """Scoring module for calculating credibility scores."""
 
 import json
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from pathlib import Path
 import logging
 
@@ -19,6 +19,12 @@ class CredibilityScorer:
         """Load domain reputation scores from JSON file."""
         try:
             reputation_file = Path(file_path)
+            if not reputation_file.is_absolute():
+                # Try relative to current directory first
+                if not reputation_file.exists():
+                    # Try relative to this file's directory
+                    reputation_file = Path(__file__).parent.parent / file_path
+            
             if reputation_file.exists():
                 with open(reputation_file, 'r') as f:
                     return json.load(f)
@@ -31,10 +37,10 @@ class CredibilityScorer:
     
     def calculate_credibility_score(
         self,
-        model_prediction: Dict[str, any],
-        fact_check_results: List[Dict[str, any]],
+        model_prediction: Dict[str, Any],
+        fact_check_results: List[Dict[str, Any]],
         domain: Optional[str] = None
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """
         Calculate overall credibility score.
         
@@ -73,7 +79,7 @@ class CredibilityScorer:
             'source_reputation': source_score if domain else None
         }
     
-    def _calculate_model_score(self, prediction: Dict[str, any]) -> float:
+    def _calculate_model_score(self, prediction: Dict[str, Any]) -> float:
         """Calculate score from model prediction (0-1 scale)."""
         label = prediction.get('label', 'Unknown')
         confidence = prediction.get('confidence', 0.0)
@@ -90,7 +96,7 @@ class CredibilityScorer:
         else:
             return 0.5  # Unknown gets neutral score
     
-    def _calculate_factcheck_score(self, fact_check_results: List[Dict[str, any]]) -> float:
+    def _calculate_factcheck_score(self, fact_check_results: List[Dict[str, Any]]) -> float:
         """Calculate score from fact-check results (0-1 scale)."""
         if not fact_check_results:
             return 0.5  # Neutral score when no fact-checks available
@@ -137,7 +143,7 @@ class CredibilityScorer:
             # Unknown domain gets neutral score
             return 0.5
     
-    def get_scoring_explanation(self) -> Dict[str, any]:
+    def get_scoring_explanation(self) -> Dict[str, Any]:
         """Get explanation of scoring methodology."""
         return {
             'formula': 'credibility_score = (model_score * w1) + (factcheck_score * w2) + (source_score * w3)',

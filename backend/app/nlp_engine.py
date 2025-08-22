@@ -1,7 +1,7 @@
 """NLP engine for fake news detection using HuggingFace transformers."""
 
 from transformers import pipeline, AutoTokenizer
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any
 import torch
 import logging
 import re
@@ -36,7 +36,7 @@ class FakeNewsDetector:
             logger.error(f"Failed to load model: {e}")
             raise
     
-    def predict(self, text: str) -> Dict[str, any]:
+    def predict(self, text: str) -> Dict[str, Any]:
         """
         Predict if text is fake news.
         
@@ -88,7 +88,7 @@ class FakeNewsDetector:
                 'error': str(e)
             }
     
-    def analyze_sentences(self, text: str) -> List[Dict[str, any]]:
+    def analyze_sentences(self, text: str) -> List[Dict[str, Any]]:
         """
         Analyze individual sentences for suspiciousness.
         
