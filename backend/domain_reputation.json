@@ -1,0 +1,21 @@
+{
+  "reuters.com": 0.95,
+  "bbc.com": 0.92,
+  "apnews.com": 0.94,
+  "npr.org": 0.88,
+  "cnn.com": 0.75,
+  "foxnews.com": 0.65,
+  "breitbart.com": 0.25,
+  "infowars.com": 0.05,
+  "theonion.com": 0.1,
+  "babylonbee.com": 0.15,
+  "washingtonpost.com": 0.82,
+  "nytimes.com": 0.85,
+  "wsj.com": 0.88,
+  "guardian.com": 0.80,
+  "dailymail.co.uk": 0.45,
+  "rt.com": 0.20,
+  "sputniknews.com": 0.15,
+  "naturalnews.com": 0.10,
+  "beforeitsnews.com": 0.05
+}
